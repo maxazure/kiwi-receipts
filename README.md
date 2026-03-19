@@ -207,13 +207,13 @@ All data is stored locally on your machine:
 └── receipts.json    # All captured receipts
 ```
 
-No data is uploaded to any external server. Receipt images are processed by your OpenClaw agent's configured vision model — this could be a local model (e.g. Ollama) or a cloud API (e.g. Claude, GPT-4V), depending on your setup. If your receipts contain sensitive information (credit card numbers, personal details), consider using a local vision model.
+No data is uploaded to any external server by this skill. Receipt image recognition uses the same AI model you have configured in your OpenClaw instance — the skill itself does not call any external API.
 
 ## Privacy
 
 - **Receipt data**: stored only in `~/.openclaw/data/kiwi-receipts/` on your device
 - **Business info**: your GST number and business name are stored in `config.json` locally
-- **Vision processing**: depends on your OpenClaw agent configuration — check whether your agent uses local or cloud-based OCR
+- **Vision processing**: uses your OpenClaw model — the skill does not connect to any separate OCR or vision service
 - **No telemetry**: this skill does not collect, transmit, or log any usage data
 
 ## License
