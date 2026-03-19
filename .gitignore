@@ -1,0 +1,20 @@
+# Data (personal receipts - never commit)
+*.json
+!package.json
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Reports
+*.xlsx
+*.csv
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.*
