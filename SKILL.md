@@ -153,14 +153,14 @@ Use your vision capabilities to analyze the receipt image. Extract:
 Send back a summary:
 
 ```
-🧾 Receipt captured:
-📍 Bunnings Warehouse
-📅 2026-03-15
-💰 $174.00 (GST: $22.57)
-📦 2 items: Timber 2x4 3.6m ×10, Concrete Mix 40kg ×5
-🏷️ Category: materials
+Receipt captured:
+  Merchant: Bunnings Warehouse
+  Date: 2026-03-15
+  Total: $174.00 (GST: $22.57)
+  Items: Timber 2x4 3.6m x10, Concrete Mix 40kg x5
+  Category: materials
 
-Reply ✅ to save, or correct any details.
+Reply to save, or correct any details.
 ```
 
 ### Step 3: Save receipt data
@@ -191,13 +191,13 @@ Read existing `receipts.json` (or start with `[]`), append the new receipt with 
 
 ## Handling Text Commands
 
-### "setup" or "设置"
+### "setup"
 Create or update `config.json` with business name and GST number.
 
-### "summary" or "汇总"
+### "summary"
 Read `receipts.json`, filter to current GST period, show:
 ```
-📊 GST Period: Mar-Apr 2026
+GST Period: Mar-Apr 2026
 Total purchases: $1,527.37
 Total GST claimable: $199.13
 Receipts: 5

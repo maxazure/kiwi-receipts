@@ -75,7 +75,7 @@ def filter_by_period(receipts: list, period: str) -> list:
             end_date = date(year + 1, 1, 1)
         else:
             end_date = date(year, end_m + 1, 1)
-    elif period == "all":
+    elif period in ("all", "annual"):
         return receipts
     else:
         # YYYY-MM format — find the 2-month period containing this month
@@ -335,8 +335,8 @@ def calculate_depreciation(asset: dict, tax_year_end: date) -> dict:
     sl_rate = asset.get("sl_rate", 0)
     business_percent = asset.get("business_percent", 100) / 100.0
 
-    tax_year_start = date(tax_year_end.year - 1, tax_year_end.month, tax_year_end.day + 1) \
-        if tax_year_end.month != 3 else date(tax_year_end.year - 1, 4, 1)
+    # NZ tax year: 1 April to 31 March (only March balance date supported)
+    tax_year_start = date(tax_year_end.year - 1, 4, 1)
 
     # For DV method, accumulate year by year from purchase
     if method == "DV":
@@ -647,7 +647,9 @@ def add_ir3_sheet(wb: Workbook, receipts: list, income: list | None,
     if tax_history and "years" in tax_history:
         # Use previous year's RIT as provisional tax basis
         years_data = tax_history["years"]
-        prev_year = str(int(tax_year[:4]) - 1)
+        # tax_year is "YYYY-YYYY" format; first year is the start year
+        start_year = tax_year.split("-")[0] if "-" in tax_year else tax_year
+        prev_year = str(int(start_year))
         if prev_year in years_data:
             provisional_paid = years_data[prev_year].get("provisional_tax_paid", 0)
 
@@ -711,7 +713,7 @@ def generate_xero_csv(receipts: list, income: list | None, output_path: Path):
                 "Payee": r.get("client", ""),
                 "Description": r.get("description", ""),
                 "Reference": r.get("invoice_number", ""),
-                "Category": "Sales Revenue",
+                "Category": "Sales",
                 "_sort_date": dt,
             })
 
@@ -762,9 +764,15 @@ def main():
         print(f"No receipt data found at {data_path}", file=sys.stderr)
         sys.exit(1)
 
-    with open(data_path) as f:
-        all_receipts = json.load(f)
+    def load_json(path: Path, label: str):
+        try:
+            with open(path) as f:
+                return json.load(f)
+        except json.JSONDecodeError as e:
+            print(f"Error: {label} is not valid JSON: {e}", file=sys.stderr)
+            sys.exit(1)
 
+    all_receipts = load_json(data_path, "receipts.json")
     receipts = filter_by_period(all_receipts, args.period)
 
     # Load income records
@@ -772,36 +780,35 @@ def main():
     if args.income:
         income_path = Path(args.income)
         if income_path.exists():
-            with open(income_path) as f:
-                all_income = json.load(f)
+            all_income = load_json(income_path, "income.json")
             income_records = filter_by_period(all_income, args.period)
 
-    # Load assets (no period filter — all active assets)
+    # Load assets (no period filter -- all active assets)
     assets = None
     if args.assets:
         assets_path = Path(args.assets)
         if assets_path.exists():
-            with open(assets_path) as f:
-                assets = json.load(f)
+            assets = load_json(assets_path, "assets.json")
 
     # Load tax history
     tax_history = None
     if args.tax_history:
         th_path = Path(args.tax_history)
         if th_path.exists():
-            with open(th_path) as f:
-                tax_history = json.load(f)
+            tax_history = load_json(th_path, "tax-history.json")
 
-    if not receipts:
-        print(f"No receipts found for period: {args.period}", file=sys.stderr)
+    if not receipts and not income_records and not assets:
+        print(f"No data found for period: {args.period}", file=sys.stderr)
         sys.exit(1)
+    if not receipts:
+        receipts = []
 
     # Determine period label
     if args.period == "current":
         today = date.today()
         s, e, y, _ = get_gst_period(today)
         p_label = period_label(s, e, y)
-    elif args.period == "all":
+    elif args.period in ("all", "annual"):
         p_label = "All Periods"
     else:
         parts = args.period.split("-")
@@ -830,7 +837,7 @@ def main():
 
     # Depreciation and IR3 (for annual / "all" period)
     total_depreciation = 0.0
-    if assets and args.period == "all":
+    if assets and args.period in ("all", "annual"):
         # Determine tax year end (default: March 31 of latest receipt year)
         years_in_data = set()
         for r in receipts:
@@ -848,16 +855,18 @@ def main():
         tax_year_end = date(max_year, 3, 31)
         total_depreciation = add_depreciation_sheet(wb, assets, tax_year_end)
 
-    if args.period == "all":
-        # Determine tax year string
-        years_in_data = set()
-        for r in receipts:
-            try:
-                years_in_data.add(date.fromisoformat(r["date"]).year)
-            except (ValueError, KeyError):
-                pass
-        max_year = max(years_in_data) if years_in_data else date.today().year
-        tax_year = f"{max_year}"
+    if args.period in ("all", "annual"):
+        # Tax year ends on March 31 of the latest year in data
+        # Reuse max_year from depreciation block, or compute it
+        if not assets or args.period != "all":
+            years_in_data = set()
+            for r in receipts + (income_records or []):
+                try:
+                    years_in_data.add(date.fromisoformat(r["date"]).year)
+                except (ValueError, KeyError):
+                    pass
+            max_year = max(years_in_data) if years_in_data else date.today().year
+        tax_year = f"{max_year - 1}-{max_year}"
 
         add_ir3_sheet(wb, receipts, income_records, total_depreciation,
                       tax_year, args.business_name, args.gst_number, tax_history)
