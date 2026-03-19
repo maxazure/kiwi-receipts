@@ -64,11 +64,78 @@ The XLSX report generator requires `openpyxl`. It will auto-install on first run
 pip install openpyxl
 ```
 
-## Quick Start
+## How It Works
 
-### 1. Set up your business info
+### Daily: Snap and send
 
-Send "setup" to your OpenClaw bot:
+Bought materials, filled up the van, picked up safety gear? Just take a photo and send it to your OpenClaw bot (Telegram or WhatsApp):
+
+```
+You: [send a photo of your Bunnings receipt]
+Bot: 🧾 Receipt captured:
+     📍 Bunnings Warehouse
+     📅 2026-03-19
+     💰 $174.00 (GST: $22.70)
+     📦 Timber 2x4 x10, Concrete Mix x5
+     🏷️ Category: materials
+
+     Reply ✅ to save, or correct any details.
+You: ✅
+Bot: Saved! (Period total: $1,527.37, 5 receipts)
+```
+
+That's it for the day. All data is stored locally on your machine.
+
+### Every two months: Generate your GST report
+
+New Zealand GST is filed **every two months**. When the period ends, just send `report`:
+
+```
+You: report
+Bot: 📥 GST Report: Mar-Apr 2026
+     Receipts: 23
+     Total purchases: $8,420.50
+     GST credit: $1,098.33
+     [Download XLSX]
+```
+
+### Then: File on myIR
+
+Open the XLSX — the **IRD GST101A** sheet has your numbers ready:
+
+| Box | Description | Value |
+|-----|-------------|-------|
+| **11** | Total purchases (incl GST) | **$8,420.50** (auto-filled) |
+| **12** | GST credit (Box 11 × 3/23) | **$1,098.33** (auto-calculated) |
+| **14** | Total GST credit | **$1,098.33** (auto-calculated) |
+| 5 | Total sales and income | *You fill this from your invoicing system* |
+
+Log in to [myIR](https://www.ird.govt.nz/), copy the numbers into your GST return, and submit. Done.
+
+### NZ GST filing periods and due dates
+
+| Period | Due Date |
+|--------|----------|
+| Jan – Feb | 28 March |
+| Mar – Apr | 28 May |
+| May – Jun | 28 July |
+| Jul – Aug | 28 September |
+| Sep – Oct | 28 November |
+| Nov – Dec | 15 January* |
+
+*Special dates: periods ending 31 March are due **7 May**, periods ending 30 November are due **15 January**.*
+
+### In short
+
+**Daily** — snap receipt, send photo, confirm, done.
+
+**Every 2 months** — send `report`, get XLSX, copy numbers to myIR, file.
+
+No more shoeboxes full of faded receipts at tax time.
+
+## First-Time Setup
+
+Send `setup` to your OpenClaw bot:
 
 ```
 You: setup
@@ -78,14 +145,6 @@ Bot: What's your GST/IRD number?
 You: 12-345-678
 Bot: Saved!
 ```
-
-### 2. Start scanning receipts
-
-Send a receipt photo and the skill will extract and store the data.
-
-### 3. Generate your GST report
-
-Send "report" to get a downloadable XLSX file with your IRD GST101A pre-filled.
 
 ## Commands
 
