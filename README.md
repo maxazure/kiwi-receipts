@@ -10,7 +10,7 @@ An [OpenClaw](https://github.com/nichochar/openclaw) skill that turns receipt ph
 - **NZ GST compliant** — 15% rate, 3/23 tax fraction, IRD GST101A box mapping
 - **XLSX export** — 4-sheet workbook: Summary, All Receipts, By Category, IRD GST101A
 - **Auto-fills Box 11–14** — purchases, GST credit, and totals calculated from your receipts
-- **Bilingual** — English and Chinese (中文) commands supported
+- **Bilingual** — English and Chinese commands supported
 - **Personal use** — runs on your own OpenClaw instance, no server needed
 - **7-year compliant** — JSON storage for the Section 75 record-keeping requirement
 
@@ -56,13 +56,13 @@ Send a receipt photo and the skill will extract and store the data.
 | Command | Description |
 |---------|-------------|
 | 📸 *Send photo* | Capture a receipt |
-| `setup` / `设置` | Set business name & GST number |
-| `summary` / `汇总` | Current GST period overview |
-| `report` / `报表` | Download XLSX report |
-| `report 2026-03` | Report for specific period |
-| `list` / `列表` | Show recent receipts |
-| `delete last` / `删除上一条` | Remove last receipt |
-| `help` / `帮助` | Show all commands |
+| `setup` | Set business name & GST number |
+| `summary` | Current GST period overview |
+| `report` | Download XLSX report |
+| `report 2026-03` | Report for a specific period |
+| `list` | Show recent receipts |
+| `delete last` | Remove last receipt |
+| `help` | Show all commands |
 
 ## GST101A Box Mapping
 
