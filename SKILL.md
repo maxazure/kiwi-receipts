@@ -93,7 +93,7 @@ Reply ✅ to save, or correct any details.
 After confirmation, append to `~/.openclaw/data/kiwi-receipts/receipts.json`:
 
 ```bash
-mkdir -p ~/.openclaw/data/receipt-to-ird
+mkdir -p ~/.openclaw/data/kiwi-receipts
 ```
 
 Read existing `receipts.json` (or start with `[]`), append the new receipt with a generated UUID as `id`, and write back. Each receipt object:

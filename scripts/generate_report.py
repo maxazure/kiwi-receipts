@@ -11,19 +11,9 @@ try:
     from openpyxl import Workbook
     from openpyxl.styles import Font, Alignment, Border, Side, PatternFill, numbers
 except ImportError:
-    import subprocess
-    venv_dir = Path.home() / ".openclaw" / "data" / "receipt-to-ird" / ".venv"
-    if not venv_dir.exists():
-        print("Creating venv and installing openpyxl...", file=sys.stderr)
-        subprocess.check_call([sys.executable, "-m", "venv", str(venv_dir)])
-    pip = venv_dir / "bin" / "pip"
-    subprocess.check_call([str(pip), "install", "openpyxl", "-q"])
-    # Re-exec with venv python
-    venv_python = venv_dir / "bin" / "python3"
-    import os
-    os.execv(str(venv_python), [str(venv_python)] + sys.argv)
-    from openpyxl import Workbook
-    from openpyxl.styles import Font, Alignment, Border, Side, PatternFill, numbers
+    print("Error: openpyxl is required but not installed.", file=sys.stderr)
+    print("Install it with:  pip install openpyxl", file=sys.stderr)
+    sys.exit(1)
 
 
 def get_gst_period(dt: date) -> tuple[int, int, int, int]:
