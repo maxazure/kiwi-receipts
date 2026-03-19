@@ -14,27 +14,59 @@ An [OpenClaw](https://github.com/nichochar/openclaw) skill that turns receipt ph
 - **Personal use** — runs on your own OpenClaw instance, no server needed
 - **7-year compliant** — JSON storage for the Section 75 record-keeping requirement
 
-## Quick Start
+## Installation
 
-### 1. Install the skill
-
-Copy the `kiwi-receipts` folder into your OpenClaw skills directory:
+### Option A: ClawHub (recommended)
 
 ```bash
-cp -r kiwi-receipts ~/.openclaw/skills/kiwi-receipts
-# or symlink
-ln -s $(pwd) ~/.openclaw/skills/kiwi-receipts
+# Install the ClawHub CLI if you haven't already
+npm i -g clawhub
+
+# Install the skill
+clawhub install kiwi-receipts
 ```
 
-### 2. Install Python dependency
+### Option B: Git clone
 
-The report generator needs `openpyxl`:
+```bash
+git clone https://github.com/maxazure/kiwi-receipts.git ~/.openclaw/skills/kiwi-receipts
+```
+
+### Option C: Manual download
+
+Download the repository and copy it into any of the supported skill directories:
+
+```bash
+# Workspace skills (highest priority)
+cp -r kiwi-receipts ~/.openclaw/workspace/skills/kiwi-receipts
+
+# Or managed skills directory
+cp -r kiwi-receipts ~/.openclaw/skills/kiwi-receipts
+```
+
+You can also register an extra skill directory in `~/.openclaw/openclaw.json`:
+
+```json
+{
+  "skills": {
+    "load": {
+      "extraDirs": ["/path/to/your/skills/folder"]
+    }
+  }
+}
+```
+
+### Python dependency
+
+The XLSX report generator requires `openpyxl`. It will auto-install on first run, or you can install it manually:
 
 ```bash
 pip install openpyxl
 ```
 
-### 3. Set up your business info
+## Quick Start
+
+### 1. Set up your business info
 
 Send "setup" to your OpenClaw bot:
 
@@ -44,12 +76,16 @@ Bot: What's your business name?
 You: My Construction Ltd
 Bot: What's your GST/IRD number?
 You: 12-345-678
-Bot: ✅ Saved!
+Bot: Saved!
 ```
 
-### 4. Start scanning receipts
+### 2. Start scanning receipts
 
 Send a receipt photo and the skill will extract and store the data.
+
+### 3. Generate your GST report
+
+Send "report" to get a downloadable XLSX file with your IRD GST101A pre-filled.
 
 ## Commands
 
