@@ -58,7 +58,7 @@ You can also register an extra skill directory in `~/.openclaw/openclaw.json`:
 
 ### Python dependency
 
-The XLSX report generator requires `openpyxl`. It will auto-install on first run, or you can install it manually:
+The XLSX report generator requires `openpyxl`. Install it before first use:
 
 ```bash
 pip install openpyxl
@@ -206,6 +206,15 @@ All data is stored locally on your machine:
 ├── config.json      # Your business name + GST number
 └── receipts.json    # All captured receipts
 ```
+
+No data is uploaded to any external server. Receipt images are processed by your OpenClaw agent's configured vision model — this could be a local model (e.g. Ollama) or a cloud API (e.g. Claude, GPT-4V), depending on your setup. If your receipts contain sensitive information (credit card numbers, personal details), consider using a local vision model.
+
+## Privacy
+
+- **Receipt data**: stored only in `~/.openclaw/data/kiwi-receipts/` on your device
+- **Business info**: your GST number and business name are stored in `config.json` locally
+- **Vision processing**: depends on your OpenClaw agent configuration — check whether your agent uses local or cloud-based OCR
+- **No telemetry**: this skill does not collect, transmit, or log any usage data
 
 ## License
 
