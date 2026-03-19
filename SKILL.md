@@ -1,42 +1,117 @@
 ---
 name: kiwi-receipts
-description: "Process receipt photos into IRD-ready GST reports for NZ businesses. Use when: (1) user sends a receipt/invoice photo, (2) user asks for GST summary or report, (3) user wants to export receipts for tax filing, (4) user mentions IRD, GST return, or tax receipts. Triggers on images with receipt-like content or text mentioning receipts/invoices/GST."
+description: "NZ tax assistant for sole traders. Process receipt photos into IRD-ready GST reports, track sales income for GST Box 5, calculate IR3 annual income tax, provisional tax, asset depreciation, and export to Xero CSV. Use when: (1) user sends a receipt/invoice photo, (2) user asks about GST, income tax, or tax returns, (3) user wants to export receipts or generate reports, (4) user mentions IRD, GST, IR3, provisional tax, or depreciation."
 metadata:
   {
     "openclaw":
       {
         "emoji": "🧾",
-        "triggers": ["receipt", "invoice", "gst", "ird", "tax", "小票", "发票"],
+        "triggers": ["receipt", "invoice", "gst", "ird", "tax", "ir3", "depreciation", "provisional", "income", "asset"],
       },
   }
 ---
 
-# Kiwi Receipts 🧾🥝
+# Kiwi Receipts
 
-Process receipt and invoice photos into IRD-compliant GST reports for New Zealand businesses. Send photos via Telegram/WhatsApp, the skill extracts data using vision AI, accumulates receipts, and generates XLSX reports ready for GST filing.
+NZ tax assistant for sole trader builders and contractors. Process receipt photos into IRD-ready GST reports, track sales income, calculate annual income tax (IR3), provisional tax, and asset depreciation. Export to XLSX or Xero CSV.
 
-This is a personal-use skill — each user runs their own instance. No multi-tenant, no login.
+This is a personal-use skill -- each user runs their own instance. No multi-tenant, no login.
 
 ## Data Paths
 
 ```
 ~/.openclaw/data/kiwi-receipts/
-├── config.json      # Business name, GST number
-└── receipts.json    # All captured receipts
+├── config.json        # Business name, GST number, tax settings
+├── receipts.json      # All captured purchase receipts
+├── income.json        # Sales/invoice records
+├── assets.json        # Depreciable assets register
+└── tax-history.json   # Previous years' tax figures (for provisional tax)
 ```
 
 ## First-Time Setup
 
-When user sends "setup" or "设置", or on first use when `config.json` doesn't exist:
+When user sends "setup", or on first use when `config.json` doesn't exist:
 
 1. Ask for business name
 2. Ask for GST/IRD number
-3. Save to `~/.openclaw/data/kiwi-receipts/config.json`:
+3. Ask for vehicle business use % (default 80)
+4. Ask for phone business use % (default 70)
+5. Save to `~/.openclaw/data/kiwi-receipts/config.json`:
 
 ```json
 {
-  "business_name": "MaxBuild Construction Ltd",
-  "gst_number": "88-123-456"
+  "business_name": "My Construction Ltd",
+  "gst_number": "12-345-678",
+  "balance_date": "31-march",
+  "gst_filing_frequency": "2-monthly",
+  "depreciation_method": "DV",
+  "vehicle_business_percent": 80,
+  "phone_business_percent": 70,
+  "home_office_percent": 0
+}
+```
+
+### income.json structure
+
+Each entry represents an invoice or payment received:
+
+```json
+[
+  {
+    "id": "uuid-here",
+    "date": "2026-03-15",
+    "client": "ABC Homes Ltd",
+    "description": "Bathroom renovation - 42 Rimu St",
+    "amount_excl_gst": 8500.65,
+    "gst": 1274.35,
+    "amount_incl_gst": 9775.00,
+    "invoice_number": "INV-2026-015",
+    "status": "paid",
+    "created_at": "2026-03-15T14:30:00Z"
+  }
+]
+```
+
+### assets.json structure
+
+```json
+[
+  {
+    "id": "uuid-here",
+    "name": "DeWalt DCS570 Circular Saw",
+    "category": "portable_power_tools",
+    "purchase_date": "2026-01-15",
+    "cost": 899.00,
+    "dv_rate": 0.40,
+    "sl_rate": 0.30,
+    "method": "DV",
+    "business_percent": 100,
+    "disposed": false,
+    "disposal_date": null,
+    "disposal_amount": null,
+    "created_at": "2026-01-15T10:00:00Z"
+  }
+]
+```
+
+### tax-history.json structure
+
+```json
+{
+  "years": {
+    "2025": {
+      "tax_year_end": "2025-03-31",
+      "gross_income": 95000.00,
+      "total_expenses": 42000.00,
+      "depreciation": 3500.00,
+      "taxable_income": 49500.00,
+      "tax_on_income": 7582.50,
+      "acc_levy": 826.50,
+      "total_tax": 8409.00,
+      "tax_already_paid": 0,
+      "residual_income_tax": 8409.00
+    }
+  }
 }
 ```
 
